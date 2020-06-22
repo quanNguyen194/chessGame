@@ -38,7 +38,7 @@ var evaluateBoard = function (board) {
 };
 
 /* Minimax algorithm with Alpha-beta prunning  */
-var abprunning = function (depth, game, alpha, beta, isMaximised) {
+var abprunning = function (depth, game, alpha, beta, maximizingPlayer) {
   positionCount++;
   if (depth === 0) {
     return -evaluateBoard(game.board());
@@ -46,13 +46,13 @@ var abprunning = function (depth, game, alpha, beta, isMaximised) {
 
   var newGameMoves = game.ugly_moves();
 
-  if (isMaximised) {
+  if (maximizingPlayer) {
     var best = -9999;
     for (var i = 0; i < newGameMoves.length; i++) {
       game.ugly_move(newGameMoves[i]);
       best = Math.max(
         best,
-        abprunning(depth - 1, game, alpha, beta, !isMaximised)
+        abprunning(depth - 1, game, alpha, beta, !maximizingPlayer)
       );
       game.undo();
       alpha = Math.max(alpha, best);
@@ -67,7 +67,7 @@ var abprunning = function (depth, game, alpha, beta, isMaximised) {
       game.ugly_move(newGameMoves[i]);
       best = Math.min(
         best,
-        abprunning(depth - 1, game, alpha, beta, !isMaximised)
+        abprunning(depth - 1, game, alpha, beta, !maximizingPlayer)
       );
       game.undo();
       beta = Math.min(beta, best);
@@ -79,7 +79,7 @@ var abprunning = function (depth, game, alpha, beta, isMaximised) {
   }
 };
 
-var minimax = function (depth, game, isMaximised) {
+var minimax = function (depth, game, maximizingPlayer) {
   var newGameMoves = game.ugly_moves();
   var best = -9999;
   var bestFound;
@@ -87,7 +87,7 @@ var minimax = function (depth, game, isMaximised) {
   for (var i = 0; i < newGameMoves.length; i++) {
     var newGameMove = newGameMoves[i];
     game.ugly_move(newGameMove);
-    var value = abprunning(depth - 1, game, -10000, 10000, !isMaximised);
+    var value = abprunning(depth - 1, game, -10000, 10000, !maximizingPlayer);
     game.undo();
     if (value >= best) {
       best = value;
